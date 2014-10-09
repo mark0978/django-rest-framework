@@ -13,7 +13,7 @@ import warnings
 from decimal import Decimal, DecimalException
 from django import forms
 from django.core import validators
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.conf import settings
 from django.db.models.fields import BLANK_CHOICE_DASH
 from django.http import QueryDict
@@ -55,7 +55,10 @@ def get_component(obj, attr_name):
     if isinstance(obj, dict):
         val = obj.get(attr_name)
     else:
-        val = getattr(obj, attr_name)
+        try:
+            val = getattr(obj, attr_name)
+        except ObjectDoesNotExist:
+            val = None
 
     if is_simple_callable(val):
         return val()
